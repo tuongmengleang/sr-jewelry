@@ -1,12 +1,12 @@
 {
-  "name": "nuxt3-awesome-starter",
+  "name": "sr-jewelry",
   "version": "0.1.0",
   "description": "a Nuxt 3 starter template or boilerplate with a lot of useful features. Nuxt3 + Tailwindcss 3",
   "repository": {
     "type": "git",
-    "url": "git://github.com/viandwi24/nuxt3-awesome-starter"
+    "url": "git@github.com:tuongmengleang/sr-jewelry.git"
   },
-  "author": "viandwi24",
+  "author": "tuongmengleang",
   "license": "MIT",
   "scripts": {
     "build": "nuxt build",
@@ -20,6 +20,7 @@
     "lintfix": "eslint --fix --ext \".ts,.js,.vue\" --ignore-path .eslintignore .",
     "prepare": "husky install",
     "clean": "rm -rf .nuxt dist .output",
+    "remove": "rm -rf node_modules yarn.lock",
     "generate:locales": "node tools/translator.js ./locales en.yml"
   },
   "devDependencies": {
@@ -33,17 +34,26 @@
     "@nuxt/test-utils-edge": "3.0.0-rc.13-27772354.a0a59e2",
     "@nuxtjs/eslint-config": "^12.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@nuxtjs/google-fonts": "^2.0.0",
+    "@nuxtjs/supabase": "^0.3.0",
+    "@ocrv/vue-tailwind-pagination": "^0.0.4",
     "@pinia/nuxt": "^0.4.3",
+    "@splidejs/vue-splide": "^0.6.12",
+    "@vueform/slider": "^2.1.7",
     "@vueuse/core": "^9.6.0",
     "@vueuse/nuxt": "^9.6.0",
-    "eslint": "^8.27.0",
+    "compressorjs": "^1.1.1",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-nuxt": "^3.2.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "gridjs": "^5.1.0",
     "husky": "^8.0.2",
     "js-yaml": "^4.1.0",
     "lint-staged": "^13.0.3",
+    "lodash.debounce": "^4.0.8",
     "nuxt": "3.0.0",
+    "nuxt-icon": "^0.1.8",
     "nuxt-windicss": "^2.5.1",
     "pinia": "^2.0.23",
     "postcss": "8.4.14",
@@ -57,15 +67,20 @@
     "typescript": "^4.8.4",
     "unplugin-icons": "^0.14.14",
     "unplugin-vue-components": "^0.22.9",
+    "vee-validate": "^4.7.3",
     "vite": ">=2.9.0 <3.0.0 || >=3.0.0-0 <3.0.0",
     "vitest": "^0.23.4",
     "vue": "^3.2.41",
+    "vue-currency-input": "^3.0.3",
+    "vue-toastification": "^2.0.0-rc.5",
     "vue-tsc": "^1.0.9",
-    "webpack": ">=5.0.0 <6.0.0"
+    "vuesax3": "^4.1.1",
+    "webpack": ">=5.0.0 <6.0.0",
+    "yup": "^0.32.11"
   },
   "lint-staged": {
     "**/*.{js,ts,vue,html}": [
-      "pnpm lintfix"
+      "yarn lintfix"
     ]
   }
 }

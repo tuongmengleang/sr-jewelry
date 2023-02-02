@@ -27,7 +27,7 @@ const MyTheme = {
       '800': '#0F2A1E',
       '900': '#000000',
     },
-    blue: {
+    primary: {
       DEFAULT: '#0096FF',
       '50': '#B8E2FF',
       '100': '#A3D9FF',
@@ -77,17 +77,17 @@ export default defineConfig({
         '8xl': '90rem',
       },
       colors: {
-        primary: MyTheme.colors.green,
+        primary: MyTheme.colors.primary,
         // if want to change primary color to blue
         // primary: MyTheme.colors.blue,
         green: MyTheme.colors.green,
-        blue: MyTheme.colors.blue,
+        blue: MyTheme.colors.primary,
         red: MyTheme.colors.red,
         slate: colors.slate,
       },
-      fontFamily: {
-        sans: ['Nunito', ...defaultTheme.fontFamily.sans],
-      },
+      // fontFamily: {
+      //   sans: ['Poppins', ...defaultTheme.fontFamily.sans],
+      // },
     },
   },
   shortcuts: {

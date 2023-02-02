@@ -9,21 +9,28 @@ const app = useAppConfig() as AppConfigInput
 
 useHead({
   title: app.name,
-  titleTemplate: '%s - Nuxt 3 Awesome Starter',
+  titleTemplate: '%s - SR Jewelry',
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     {
       hid: 'description',
       name: 'description',
-      content: 'Nuxt 3 Awesome Starter',
+      content: 'SR Jewelry',
     },
   ],
-  link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+  link: [
+    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+    },
+  ],
 })
 </script>
 
 <template>
-  <Html :class="`${theme === 'dark' ? 'dark' : ''}`" :lang="locale">
+  <!-- :class="`${theme === 'dark' ? 'dark' : ''}`" -->
+  <Html :lang="locale">
     <Body
       class="antialiased duration-300 transition-colors text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900"
     >

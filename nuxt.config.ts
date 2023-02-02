@@ -37,6 +37,8 @@ export default defineNuxtConfig({
     '@nuxt/content',
     '@vueuse/nuxt',
     'nuxt-windicss',
+    'nuxt-icon',
+    '@nuxtjs/supabase',
   ],
 
   // experimental features
@@ -95,6 +97,11 @@ export default defineNuxtConfig({
       },
     },
     scan: true,
+  },
+
+  runtimeConfig: {
+    SP_URL: process.env.SUPABASE_URL,
+    SP_KEY: process.env.SUPABASE_KEY,
   },
 
   // content
