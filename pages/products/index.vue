@@ -32,10 +32,6 @@ const searchText = ref<string>('')
 const priceRange = ref<number[]>([300, 1200])
 const openFilter = ref<boolean>(false)
 
-const filterCategory = (value: number) => {
-  return product.categories.find((c: IProductCategory) => c.value === value)
-}
-
 const category = computed(() => route.query.category)
 const gemstone = computed(() => route.query.gemstone)
 
@@ -63,6 +59,19 @@ watch([currentPage, searchText, category, gemstone], ([newValue]) => {
   page.value = newValue - 1
   refresh()
 })
+
+const filterCategory = (value: number) => {
+  return product.categories.find((c: IProductCategory) => c.value === value)
+}
+
+const filterGemstone = (value: number) => {
+  return product.gemstones.find((g: IProductCategory) => g.value === value)
+}
+
+const onView = (p: IProduct) => {
+  product.updateProduct(p)
+  activeView.value = true
+}
 
 const onDelete = (p: IProduct) => {
   product.updateProduct(p)
@@ -277,7 +286,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
                               active ? 'bg-gray-100' : '',
                               'group flex items-center gap-x-2 w-full items-center rounded-md px-1.5 py-1 text-sm font-medium text-gray-900',
                             ]"
-                            @click="activeView = true"
+                            @click="onView(p)"
                           >
                             <IconRi:eye-2-line />
                             មើល
@@ -323,6 +332,8 @@ const setFilterQuery = (category: any, gemstone: any): void => {
           </div>
         </template>
       </div>
+
+      <!-- Pagination -->
       <div
         v-if="products!['data']['length'] > 0"
         class="w-full grid place-items-center mt-4"
@@ -338,9 +349,131 @@ const setFilterQuery = (category: any, gemstone: any): void => {
       </div>
 
       <!-- View Detail Dialog -->
-      <Modal v-model="activeView">
+      <Modal v-model="activeView" :outside-close="true">
         <h1 class="text-xl text-gray-900 font-semibold">មើលលម្អិតផលិតផល</h1>
-        <div class="py-4"></div>
+        <div class="py-4 space-y-2">
+          <!-- Product name -->
+          <div class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ឈ្មោះ
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              {{ product.product.name }}
+            </p>
+          </div>
+          <!-- Product category -->
+          <div v-if="product.product.category" class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ប្រភេទផលិតផល
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              {{ filterCategory(product.product.category).name }}
+            </p>
+          </div>
+          <!-- Product gemstone -->
+          <div v-if="product.product.gemstone" class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ប្រភេទត្បូង
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              {{ filterGemstone(product.product.gemstone).name }}
+            </p>
+          </div>
+          <!-- Product diamonds -->
+          <div
+            v-if="product.product.diamonds.length > 0"
+            class="flex items-center gap-5"
+          >
+            <span
+              class="flex-none self-start mt-.5 flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ចំនួនត្បូង
+            </span>
+            <ul class="w-full flex flex-col gap-y-2">
+              <li
+                v-for="(diamond, index) in product.product.diamonds"
+                :key="index"
+                class="w-full flex items-center gap-3 text-base text-gray-700 font-medium"
+              >
+                <span>ទំហំ: {{ diamond.size }}</span>
+                <span>ចំនួន: {{ diamond.quantity }}</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Product weight -->
+          <div class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ទម្ញន់
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              {{ product.product.weight }}
+            </p>
+          </div>
+          <!-- Product wages -->
+          <div class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ប្រាក់ឈ្នួល
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              ${{ product.product.wages }}
+            </p>
+          </div>
+          <!-- Product price -->
+          <div class="flex items-center gap-5">
+            <span
+              class="flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              តម្លៃ
+            </span>
+            <p class="text-base text-gray-800 font-medium">
+              ${{ product.product.price }}
+            </p>
+          </div>
+          <!-- Product price -->
+          <div
+            v-if="product.product.description"
+            class="flex items-center gap-5"
+          >
+            <span
+              class="flex-none self-start mt-.5 inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              ការពិពណ៌នា
+            </span>
+            <p class="text-sm text-gray-600 font-medium">
+              {{ product.product.description }}
+            </p>
+          </div>
+          <!-- Product images -->
+          <div
+            v-if="product.product.product_images.length > 0"
+            class="flex items-center gap-5"
+          >
+            <span
+              class="self-start mt-.5 flex-none inline-block w-1/4 text-sm text-gray-600 font-medium"
+            >
+              រូបភាពផលិតផល
+            </span>
+            <div class="flex items-center flex-wrap gap-2">
+              <img
+                v-for="(img, i) in product.product.product_images"
+                :key="i"
+                :src="$storageFile('products/' + img['image_path'])"
+                alt=""
+                class="w-20 h-auto aspect-square rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
       </Modal>
 
       <!-- Confirm Delete Dialog -->

@@ -83,12 +83,6 @@ export const useProduct = defineStore('product', {
     },
   }),
   actions: {
-    filterCategory(value: any) {
-      const result = this.categories.find(
-        (c: IProductCategory) => c.value === value
-      )
-      return ''
-    },
     clearFiles() {
       this.files = []
     },
