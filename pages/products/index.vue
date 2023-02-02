@@ -371,7 +371,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
               ប្រភេទផលិតផល
             </span>
             <p class="text-base text-gray-800 font-medium">
-              {{ filterCategory(product.product.category).name }}
+              {{ filterCategory(product.product!.category)!.name }}
             </p>
           </div>
           <!-- Product gemstone -->
@@ -382,12 +382,12 @@ const setFilterQuery = (category: any, gemstone: any): void => {
               ប្រភេទត្បូង
             </span>
             <p class="text-base text-gray-800 font-medium">
-              {{ filterGemstone(product.product.gemstone).name }}
+              {{ filterGemstone(product.product!.gemstone)!.name }}
             </p>
           </div>
           <!-- Product diamonds -->
           <div
-            v-if="product.product.diamonds.length > 0"
+            v-if="product.product!.diamonds!.length > 0"
             class="flex items-center gap-5"
           >
             <span
@@ -455,7 +455,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
           </div>
           <!-- Product images -->
           <div
-            v-if="product.product.product_images.length > 0"
+            v-if="product.product!.product_images!.length > 0"
             class="flex items-center gap-5"
           >
             <span
