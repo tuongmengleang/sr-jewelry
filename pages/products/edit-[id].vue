@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 /* imports */
 import * as Yup from 'yup'
-import { useToast } from 'vue-toastification'
+import useToast from '~/composables/useToast'
 import { useProduct } from '~/stores/product'
 import { IProduct } from '~/types/IProduct'
 import { useUI } from '~/stores/ui'
@@ -18,7 +18,6 @@ useHead({
 /* vars */
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 const client = useSupabaseClient()
 const product = useProduct()
 const ui = useUI()
@@ -117,7 +116,7 @@ const onSubmit = async (values: any): Promise<void> => {
   await product.createProductImage(images)
 
   ui.updateIsLoading(false)
-  toast.success('កែប្រែផលិតផលជោគជ័យ')
+  useToast().success('កែប្រែផលិតផលជោគជ័យ')
   router.push({ name: 'products' })
 }
 const onChange = (file: File | Blob): void => {

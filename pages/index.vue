@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as Yup from 'yup'
-import { POSITION, useToast } from 'vue-toastification'
+import useToast from '~/composables/useToast'
 
 /* vars */
 const schema = Yup.object().shape({
@@ -12,7 +12,6 @@ const router = useRouter()
 const client = useSupabaseAuthClient()
 const user = useSupabaseUser()
 const loading = ref(false)
-const toast = useToast()
 
 watchEffect(() => {
   if (user.value) router.push({ name: 'dashboard' })
@@ -27,9 +26,7 @@ const onSubmit = async (values: any, actions: any) => {
     })
     // console.log({ data, error })
     if (error) {
-      toast.error('Invalid login credentials🥲', {
-        position: POSITION.TOP_CENTER,
-      })
+      useToast().error('ឈ្មោះឬលេខសម្ងាត់មិនត្រឹមត្រូវ សូមព្យាយាមម្ដងទៀត')
       actions.resetForm({
         values: {
           email: values.email,

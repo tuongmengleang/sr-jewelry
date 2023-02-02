@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toastification'
+import useToast from '~/composables/useToast'
 
 const props = defineProps({
   modelValue: {
@@ -12,7 +12,6 @@ const emit = defineEmits(['update:modelValue'])
 const modelValue = useSyncProps<string>(props, 'modelValue', emit)
 
 const { $isImage } = useNuxtApp()
-const toast = useToast()
 const image = ref('')
 
 const fileInput = ref()
@@ -20,7 +19,7 @@ const onChange = () => {
   if (!fileInput.value) return
 
   const file = fileInput.value.files[0]
-  if (!$isImage(file)) toast.error('ប្រភេទឯកសារមិនអនុញ្ញាត!')
+  if (!$isImage(file)) useToast().error('ប្រភេទឯកសារមិនអនុញ្ញាត!')
   else {
     image.value = URL.createObjectURL(file)
     modelValue.value = file

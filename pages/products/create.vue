@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 /* imports */
 import * as Yup from 'yup'
-import { useToast } from 'vue-toastification'
+import useToast from '~/composables/useToast'
 import { useProduct } from '~/stores/product'
 import { useUI } from '~/stores/ui'
 
