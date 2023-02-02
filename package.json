@@ -8,6 +8,9 @@
   },
   "author": "tuongmengleang",
   "license": "MIT",
+  "engines": {
+    "node": "16"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
