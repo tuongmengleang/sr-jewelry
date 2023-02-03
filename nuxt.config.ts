@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     'nuxt-windicss',
     'nuxt-icon',
     '@nuxtjs/supabase',
+    'formidable',
   ],
 
   // experimental features

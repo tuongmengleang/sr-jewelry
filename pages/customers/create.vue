@@ -1,19 +1,65 @@
 <script lang="ts" setup>
+/* imports */
 import * as Yup from 'yup'
+import { useCustomer } from '~/stores/customer'
+import useToast from '~/composables/useToast'
+import { useUI } from '~/stores/ui'
 
 definePageMeta({
   layout: 'master',
 })
 
+/* states */
 const schema = Yup.object().shape({
   name: Yup.string().required('សូមបំពេញឈ្មោះអតិថិជន'),
 })
 
-const file = ref(null)
+const file: any = ref<HTMLElement>()
+const profileUpload: any = ref<HTMLElement>()
+const customer = useCustomer()
+const ui = useUI()
 
 // methods
-const onSubmit = (values: object) => {
-  console.log('values :', values)
+const onSubmit = async (values: any, actions: any): Promise<void> => {
+  ui.updateIsLoading(true)
+  if (file.value) {
+    const { data, error } = await customer.uploadImage(
+      file.value,
+      file.value.name
+    )
+    if (error) useToast().error('មានអ្វីមួយមិនប្រក្រតី សូមព្យាយាមម្ដងទៀត!')
+    else {
+      await useFetch('/api/customers', {
+        method: 'POST',
+        body: {
+          name: values.name,
+          phone: values.phone,
+          address: values.address,
+          avatar: data.path,
+        },
+      })
+    }
+  } else {
+    await useFetch('/api/customers', {
+      method: 'POST',
+      body: {
+        name: values.name,
+        phone: values.phone,
+        address: values.address,
+        avatar: '',
+      },
+    })
+  }
+  useToast().success('បង្កើតអតិថិជនជោគជ័យ')
+  actions.resetForm({
+    values: {
+      name: '',
+      phone: '',
+      address: '',
+    },
+  })
+  profileUpload.value.onClear()
+  ui.updateIsLoading(false)
 }
 </script>
 
@@ -34,7 +80,7 @@ const onSubmit = (values: object) => {
             @submit="onSubmit"
           >
             <div class="w-full flex flex-col gap-y-3">
-              <FormUploadProfile v-model="file" />
+              <FormUploadProfile ref="profileUpload" v-model="file" />
               <FormInput
                 name="name"
                 type="text"
@@ -58,8 +104,10 @@ const onSubmit = (values: object) => {
                 type="submit"
                 form="createCustomer"
                 class="w-auto ml-auto mt-3"
-                >បង្កើត</Button
+                :loading="ui.isLoading"
               >
+                បង្កើត
+              </Button>
             </div>
           </Form>
         </div>

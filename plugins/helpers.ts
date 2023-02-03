@@ -1,5 +1,7 @@
 // @ts-ignore
 import placeholder from '~/assets/images/placeholder.jpg'
+// @ts-ignore
+import profilePlaceholder from '~/assets/images/profile-placeholder.png'
 
 export default defineNuxtPlugin((nuxtApp) => {
   return {
@@ -59,6 +61,11 @@ export default defineNuxtPlugin((nuxtApp) => {
           ? 'https://jyniblykiuownpbvzmlz.supabase.co/storage/v1/object/public/' +
               src
           : placeholder
+      },
+      profileUrl: (src: string) => {
+        return src
+          ? `https://jyniblykiuownpbvzmlz.supabase.co/storage/v1/object/public/${src}`
+          : profilePlaceholder
       },
       getPagination(page: number, size: number) {
         const limit = size ? +size : 3

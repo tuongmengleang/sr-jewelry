@@ -16,7 +16,6 @@ useHead({
 
 /* vars */
 const { $humanFileSize } = useNuxtApp()
-const toast = useToast()
 const product = useProduct()
 const ui = useUI()
 const wagesRef: any = ref<HTMLElement>()
@@ -61,7 +60,6 @@ const onSubmit = async (values: any, actions: any): Promise<void> => {
   const imagesPath = await Promise.all(
     product.files.map((file: any) => product.uploadFile(file.file, file.name))
   )
-  console.log('imagesPath :', imagesPath)
   const images = imagesPath.map((item: any) => {
     return {
       image_path: item.data.path,
@@ -91,7 +89,7 @@ const onSubmit = async (values: any, actions: any): Promise<void> => {
   wagesRef.value.updateValue('')
   priceRef.value.updateValue('')
   product.removeAllFiles()
-  toast.success('បង្កើតផលិតផលជោគជ័យ')
+  useToast().success('បង្កើតផលិតផលជោគជ័យ')
 }
 
 const onChange = (file: File | Blob): void => {

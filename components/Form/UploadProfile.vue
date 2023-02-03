@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import useToast from '~/composables/useToast'
+import { useCompressor } from '~/composables/useCompressor'
 
 const props = defineProps({
   modelValue: {
@@ -9,20 +10,21 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['update:modelValue'])
-const modelValue = useSyncProps<string>(props, 'modelValue', emit)
+const modelValue: any = useSyncProps<string>(props, 'modelValue', emit)
 
 const { $isImage } = useNuxtApp()
 const image = ref('')
 
 const fileInput = ref()
-const onChange = () => {
+const onChange = async (): Promise<void> => {
   if (!fileInput.value) return
 
   const file = fileInput.value.files[0]
   if (!$isImage(file)) useToast().error('ប្រភេទឯកសារមិនអនុញ្ញាត!')
   else {
     image.value = URL.createObjectURL(file)
-    modelValue.value = file
+    modelValue.value = await useCompressor(file)
+    // modelValue.value = file
   }
 }
 
@@ -31,6 +33,10 @@ const onClear = () => {
   fileInput!.value = null
   modelValue.value = ''
 }
+
+defineExpose({
+  onClear,
+})
 </script>
 
 <template>

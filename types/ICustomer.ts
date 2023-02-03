@@ -3,5 +3,5 @@ export interface ICustomer {
   name: string
   phone?: string
   address?: string
-  profile_image?: string
+  avatar?: string
 }
