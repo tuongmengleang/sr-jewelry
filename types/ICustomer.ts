@@ -4,4 +4,5 @@ export interface ICustomer {
   phone?: string
   address?: string
   avatar?: string
+  file?: File | Blob | null
 }

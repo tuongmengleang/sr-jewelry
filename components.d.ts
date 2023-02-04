@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     'IconMaterialSymbols:arrowBackIosRounded': typeof import('~icons/material-symbols/arrow-back-ios-rounded')['default']
     'IconMdi:checkCircle': typeof import('~icons/mdi/check-circle')['default']
     'IconMi:userAdd': typeof import('~icons/mi/user-add')['default']
+    'IconMingcute:closeCircleLine': typeof import('~icons/mingcute/close-circle-line')['default']
     'IconMingcute:upload3Fill': typeof import('~icons/mingcute/upload3-fill')['default']
     'IconOcticon:trash16': typeof import('~icons/octicon/trash16')['default']
     'IconRi:eye2Line': typeof import('~icons/ri/eye2-line')['default']

@@ -2,13 +2,11 @@
 import useToast from '~/composables/useToast'
 import { useCompressor } from '~/composables/useCompressor'
 
-const props = defineProps({
-  modelValue: {
-    type: null,
-    default: '',
-    required: true,
-  },
-})
+const props = defineProps<{
+  modelValue: File | Blob | null
+  preview?: string
+}>()
+
 const emit = defineEmits(['update:modelValue'])
 const modelValue: any = useSyncProps<string>(props, 'modelValue', emit)
 
@@ -59,7 +57,7 @@ defineExpose({
     >
       <IconOcticon:trash-16 class="text-lg text-gray-800" />
     </a>
-    <img v-if="image" :src="image" alt="" />
+    <img v-if="preview || image" :src="image ? image : preview" alt="" />
     <img v-else src="~/assets/images/profile.png" alt="profile placeholder" />
   </div>
 </template>

@@ -109,7 +109,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
         <NuxtLink :to="{ name: 'products-create' }" class="ml-auto">
           <Button>
             <IconIc:outline-add-shopping-cart class="text-lg mr-2" />
-            បង្កើត
+            បង្កើតផលិតផល
           </Button>
         </NuxtLink>
       </div>

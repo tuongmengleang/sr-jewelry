@@ -13,12 +13,29 @@ export const useCustomer = defineStore('customer', {
       name: '',
       phone: '',
       address: '',
-      profile_image: '',
+      avatar: '',
+      file: null,
     },
   }),
   actions: {
+    removeCustomerFile() {
+      this.customer!.file = null
+    },
+    clearCustomer() {
+      this.customer = {
+        id: '',
+        name: '',
+        phone: '',
+        address: '',
+        avatar: '',
+        file: null,
+      }
+    },
     updateCustomer(newCustomer: ICustomer) {
       this.customer = newCustomer
+    },
+    updateCustomerByProperty(property: string, value: any) {
+      this.customer![property] = value
     },
     async uploadImage(file: File, filename: string): Promise<any> {
       const client = useSupabaseClient()
@@ -34,6 +51,14 @@ export const useCustomer = defineStore('customer', {
           cacheControl: '3600',
           upsert: false,
         })
+
+      return { data, error }
+    },
+    async removeImage(path: string): Promise<{ data: any; error: any }> {
+      const client = useSupabaseClient()
+      const { data, error } = await client.storage
+        .from('customers')
+        .remove([path])
 
       return { data, error }
     },

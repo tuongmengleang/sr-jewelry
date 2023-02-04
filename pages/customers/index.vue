@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 /* imports */
+import * as Yup from 'yup'
 import { Grid, html, h } from 'gridjs'
 import 'gridjs/dist/theme/mermaid.css'
 import { useCustomer } from '~/stores/customer'
 import { ICustomer } from '~/types/ICustomer'
+import useToast from '~/composables/useToast'
+import { useUI } from '~/stores/ui'
 
 /* page meta */
 definePageMeta({
@@ -16,12 +19,21 @@ useHead({
   title: 'បញ្ជីអតិថិជន',
 })
 
+/* schema validate */
+const schema = Yup.object().shape({
+  name: Yup.string().required('សូមបំពេញឈ្មោះអតិថិជន'),
+})
+
 /* states */
-const { $storageFile, $profileUrl } = useNuxtApp()
-const grid = new Grid()
-const customer = useCustomer()
+const { $profileUrl } = useNuxtApp()
+const grid: any = new Grid()
+const customer: any = useCustomer()
 const table: any = ref<HTMLElement>()
+const activeCreate = ref<boolean>(false)
 const activeDelete = ref<boolean>(false)
+const myForm: any = ref<HTMLElement>()
+const ui = useUI()
+const profileUpload: any = ref<HTMLElement>()
 
 /* mounted */
 onMounted(() => {
@@ -92,7 +104,11 @@ const renderData = (): void => {
                 className:
                   'p-1 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all transform duration-150 hover:-translate-y-1 hover:shadow-md',
                 onclick: () => {
-                  onDelete(row.cells[0].data, row.cells[2].data)
+                  onDelete(
+                    row.cells[0].data,
+                    row.cells[2].data,
+                    row.cells[1].data
+                  )
                 },
               },
               html(`
@@ -104,6 +120,15 @@ const renderData = (): void => {
               {
                 className:
                   'p-1 rounded-full bg-primary-300 hover:bg-primary-400 text-white transition-all transform duration-150 hover:-translate-y-1 hover:shadow-md',
+                onclick: () => {
+                  onEdit(
+                    row.cells[0].data,
+                    row.cells[1].data,
+                    row.cells[2].data,
+                    row.cells[3].data,
+                    row.cells[4].data
+                  )
+                },
               },
               html(`
                 <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="m14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg>
@@ -155,12 +180,101 @@ const renderData = (): void => {
   grid.render(table.value)
 }
 
-const onDelete = (id: any, name: any): void => {
-  customer.updateCustomer({ id, name })
+const onCreate = (): void => {
+  activeCreate.value = true
+  customer.clearCustomer()
+}
+
+const onSubmit = async (values: any, actions: any): Promise<void> => {
+  ui.updateIsLoading(true)
+  if (customer.customer.file) {
+    // If it has id => Update
+    if (customer.customer.id && customer.customer.avatar)
+      await customer.removeImage(customer.customer.avatar)
+    const { data, error } = await customer.uploadImage(
+      customer.customer.file,
+      customer.customer.file.name
+    )
+    if (error) useToast().error('មានអ្វីមួយមិនប្រក្រតី សូមព្យាយាមម្ដងទៀត!')
+    else {
+      await useFetch(
+        `/api/customers/${customer.customer.id ? customer.customer.id : ''}`,
+        {
+          method: customer.customer.id ? 'PUT' : 'POST',
+          body: {
+            name: values.name,
+            phone: values.phone,
+            address: values.address,
+            avatar: data.path,
+          },
+        }
+      )
+    }
+  } else {
+    await useFetch(
+      `/api/customers/${customer.customer.id ? customer.customer.id : ''}`,
+      {
+        method: customer.customer.id ? 'PUT' : 'POST',
+        body: {
+          name: values.name,
+          phone: values.phone,
+          address: values.address,
+          avatar: customer.customer.avatar || '',
+        },
+      }
+    )
+  }
+  useToast().success(
+    customer.customer.id ? 'កែប្រែអតិថិជនជោគជ័យ' : 'បង្កើតអតិថិជនជោគជ័យ'
+  )
+  actions.resetForm({
+    values: {
+      name: '',
+      phone: '',
+      address: '',
+    },
+  })
+  customer.removeCustomerFile()
+  profileUpload.value.onClear()
+  ui.updateIsLoading(false)
+  activeCreate.value = false
+  grid.updateConfig().forceRender()
+}
+
+const onEdit = (id, avatar, name, phone, address): void => {
+  activeCreate.value = true
+  customer.updateCustomerByProperty('avatar', avatar)
+  customer.updateCustomerByProperty('id', id)
+  setTimeout(() => {
+    myForm.value.setValues({
+      name,
+      phone,
+      address,
+    })
+  }, 100)
+}
+
+const onDelete = (id: any, name: any, avatar: any): void => {
+  customer.updateCustomer({ id, name, avatar })
   activeDelete.value = true
 }
 
-const onConfirmDelete = (): void => {}
+const onConfirmDelete = async (): Promise<void> => {
+  ui.updateIsLoading(true)
+  const { data, error } = await useFetch(
+    `/api/customers/${customer.customer.id}`,
+    {
+      method: 'DELETE',
+      body: {
+        avatar: customer.customer.avatar,
+      },
+    }
+  )
+  if (error.value) useToast().error('មានអ្វីមួយមិនប្រក្រតី សូមព្យាយាមម្ដងទៀត!')
+  activeDelete.value = false
+  ui.updateIsLoading(false)
+  grid.updateConfig().forceRender()
+}
 </script>
 
 <template>
@@ -171,18 +285,80 @@ const onConfirmDelete = (): void => {}
     </PageHeader>
     <PageBody class="pb-5">
       <div class="flex items-center">
-        <NuxtLink :to="{ name: 'customers-create' }" class="ml-auto">
-          <Button>
-            <IconMi:user-add class="text-lg mr-2" />
-            បង្កើត
-          </Button>
-        </NuxtLink>
+        <Button class="ml-auto" @click="onCreate">
+          <IconMi:user-add class="text-lg mr-2" />
+          បង្កើតអតិថិជន
+        </Button>
       </div>
 
       <!-- Table Customer -->
       <div class="w-full py-5">
         <div ref="table" class="w-full"></div>
       </div>
+
+      <!-- Modal Create -->
+      <Modal v-model="activeCreate">
+        <!-- Modal-Head -->
+        <div class="flex items-center justify-between">
+          <div class="text-lg text-gray-800 font-medium">បង្កើតអតិថិជន</div>
+          <button
+            type="button"
+            class="w-7 h-7 grid place-items-center rounded-full bg-gray-200 shadow shadow-gray-400 transform transition-all duration-200 hover:-translate-y-1.2"
+            title="Close"
+            @click="activeCreate = false"
+          >
+            <IconMingcute:close-circle-line class="text-lg text-gray-500" />
+          </button>
+        </div>
+        <div class="w-full h-[1px] bg-gray-200 my-5"></div>
+
+        <!-- Modal-Body -->
+        <Form
+          id="createCustomerForm"
+          ref="myForm"
+          :validation-schema="schema"
+          @submit="onSubmit"
+        >
+          <div class="w-full flex flex-col gap-y-3">
+            <FormUploadProfile
+              ref="profileUpload"
+              v-model="customer.customer.file"
+              :preview="
+                customer.customer.avatar
+                  ? $profileUrl('customers/' + customer.customer.avatar)
+                  : ''
+              "
+            />
+            <FormInput
+              name="name"
+              type="text"
+              label="ឈ្មោះ"
+              placeholder="ម៉េងលាង"
+              error-message="សូមបំពេញឈ្មោះ"
+            />
+            <FormInput
+              name="phone"
+              type="text"
+              label="លេខទូរសព្ទ"
+              placeholder="012 345 6789"
+            />
+            <FormInput
+              name="address"
+              type="textarea"
+              label="អាស័យដ្ឋាន"
+              placeholder="ខ័ណ្ឌមានជ័យ ភ្នំពេញ"
+            />
+          </div>
+          <Button
+            type="submit"
+            form="createCustomerForm"
+            class="w-auto ml-auto float-right mt-3"
+            :loading="ui.isLoading"
+          >
+            {{ customer.customer.id ? 'កែប្រែ' : 'បង្កើត' }}
+          </Button>
+        </Form>
+      </Modal>
 
       <!-- Modal Delete -->
       <Modal v-model="activeDelete" :outside-close="false">
@@ -207,6 +383,7 @@ const onConfirmDelete = (): void => {}
             class="w-full"
             size="sm"
             color="danger"
+            :loading="ui.isLoading"
             @click="onConfirmDelete"
           >
             យលព្រម
