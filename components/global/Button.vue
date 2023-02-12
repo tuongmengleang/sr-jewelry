@@ -36,6 +36,7 @@ const props = defineProps({
     default: false,
   },
 })
+
 const defaultStyle = `
   relative box-border relative inline-flex items-center justify-center overflow-hidden font-bold text-white transition-all duration-300 rounded-md cursor-pointer group ring-offset-2 ring-1 ease focus:outline-none
 `
@@ -46,7 +47,7 @@ const styles = reactive<{
     !props.bordered ? 'bg-primary' : 'bg-transparent'
   } ${
     props.disabled
-      ? '!bg-gray-300 border-gray-400 ring-gray-300 ring-offset-gray-200 hover:ring-offset-gray-400'
+      ? '!bg-gray-300 border-gray-400 !text-gray-400 ring-gray-300 ring-offset-gray-200 hover:ring-offset-gray-400 pointer-events-none'
       : 'border-primary-400 ring-primary-300 ring-offset-primary-200 hover:ring-offset-primary-400'
   } hover:bg-primary-400 transition-all ${
     props.hoverAnimate

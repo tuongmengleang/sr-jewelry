@@ -1,11 +1,10 @@
 import { defineConfig } from 'windicss/helpers'
 import type { Plugin } from 'windicss/types/interfaces'
-
 // colors
 import colors from 'windicss/colors'
 
 // themes
-import defaultTheme from 'windicss/defaultTheme'
+// import defaultTheme from 'windicss/defaultTheme'
 
 // plugins
 import TypographyPlugin from 'windicss/plugin/typography'

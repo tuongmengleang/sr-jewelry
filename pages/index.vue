@@ -26,7 +26,7 @@ const onSubmit = async (values: any, actions: any) => {
     })
     // console.log({ data, error })
     if (error) {
-      useToast().error('ឈ្មោះឬលេខសម្ងាត់មិនត្រឹមត្រូវ សូមព្យាយាមម្ដងទៀត')
+      useToast().error('ឈ្មោះឬលេខសម្ងាត់មិនត្រឹមត្រូវ🥲')
       actions.resetForm({
         values: {
           email: values.email,

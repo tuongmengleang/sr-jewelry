@@ -7,10 +7,17 @@ import {
   ComboboxButton,
   ComboboxOptions,
   ComboboxOption,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
 } from '@headlessui/vue'
 import { useCustomer } from '~/stores/customer'
 import { ICustomer } from '~/types/ICustomer'
 import { IProduct } from '~/types/IProduct'
+import { useProduct } from '~/stores/product'
 
 definePageMeta({
   layout: 'master',
@@ -24,12 +31,15 @@ useHead({
 /* states */
 const { $profileUrl, $storageFile, $getPagination, $humanPrice } = useNuxtApp()
 const customer: any = useCustomer()
+const product: any = useProduct()
 const selectedCustomer = ref<ICustomer | null>()
 const query = ref<string>('')
 const searchText = ref<string>('')
 const comboBtn: any = ref<HTMLButtonElement>()
 const active = ref<boolean>(false)
 const activeProducts: any = ref<Array<string>>([])
+const totalPrice = ref<number>(0)
+const page = ref<number>(0)
 
 /* Fetch API */
 const {
@@ -61,6 +71,15 @@ const { data: products }: any = await useAsyncData(
   }
 )
 
+watch(activeProducts.value, () => {
+  totalPrice.value = 0
+  activeProducts.value.forEach(
+    (activeProduct) =>
+      (totalPrice.value +=
+        parseInt(activeProduct.price) * parseInt(activeProduct.countOrder))
+  )
+})
+
 /* methods */
 const onDisplayValue: any = (value: ICustomer | null) => {
   return value ? value.name : ''
@@ -76,7 +95,7 @@ const onChangeFilter = debounce((event: any) => {
   refresh()
 }, 1000)
 
-const onSelectProduct = (p: IProduct) => {
+const onSelectProduct = (p: IProduct): void => {
   const isExist = activeProducts.value.includes(p)
   const index = products.value.data.findIndex(
     (item: IProduct) => item.id === p.id
@@ -86,8 +105,19 @@ const onSelectProduct = (p: IProduct) => {
       (item: IProduct) => item === p
     )
     activeProducts.value.splice(indexExist, 1)
-  } else activeProducts.value.push(p)
+  } else {
+    p.countOrder = 1
+    activeProducts.value.push(p)
+  }
   products.value.data[index].active = !products.value.data[index].active
+}
+
+const onDeleteOrder = (index: number, productId: string): void => {
+  activeProducts.value.splice(index, 1)
+  const i = products.value.data.findIndex(
+    (item: IProduct) => item.id === productId
+  )
+  products.value.data[i].active = false
 }
 </script>
 
@@ -202,7 +232,6 @@ const onSelectProduct = (p: IProduct) => {
                 </transition>
               </div>
             </Combobox>
-            <!--          <pre>{{ selectedCustomer }}</pre>-->
             <transition name="fade">
               <CardProfileUser
                 v-if="selectedCustomer"
@@ -236,7 +265,7 @@ const onSelectProduct = (p: IProduct) => {
             </div>
             <div class="grid grid-cols-1 gap-y-0 divide-y">
               <CardProductMicro
-                v-for="product in activeProducts"
+                v-for="(product, index) in activeProducts"
                 :key="product.id"
                 :image="
                   product.product_images[0].image_path
@@ -247,7 +276,31 @@ const onSelectProduct = (p: IProduct) => {
                 "
                 :title="product.name"
                 :price="$humanPrice(product.price)"
-              />
+                @onDelete="onDeleteOrder(index, product.id)"
+              >
+                <vs-input-number v-model="product.countOrder" min="1" />
+              </CardProductMicro>
+            </div>
+            <div
+              v-if="activeProducts.length > 0"
+              class="w-full flex items-center pt-3"
+            >
+              <p class="ml-auto">
+                <span class="text-sm text-gray-500 font-medium">
+                  តម្លៃសរុប ៖
+                </span>
+                <span
+                  class="inline-block ml-5 text-base text-red-600 font-semibold"
+                >
+                  {{ $humanPrice(totalPrice) }}
+                </span>
+              </p>
+            </div>
+            <div
+              v-if="selectedCustomer && activeProducts.length > 0"
+              class="w-full pt-5"
+            >
+              <Button> បញ្ជាទិញ </Button>
             </div>
           </div>
         </div>
@@ -257,13 +310,109 @@ const onSelectProduct = (p: IProduct) => {
       <Modal v-model="active" :outside-close="true">
         <h1 class="text-xl text-gray-900 font-semibold">បន្ថែមផលិតផល</h1>
         <div class="py-4 max-h-[500px] overflow-y-auto custom-scrollbar-thin">
-          <FormSearchInput
-            v-model="searchText"
-            name="search"
-            placeholder="ស្វែងរកផលិតផល"
-            :debounce="1500"
-          />
-          <div class="grid grid-cols-3 gap-3 mt-5 px-3">
+          <div class="w-full flex items-center gap-3">
+            <FormSearchInput
+              v-model="searchText"
+              name="search"
+              placeholder="ស្វែងរកផលិតផល"
+              :debounce="1500"
+              class="w-full"
+            />
+            <Popover v-slot="{ open }" class="relative">
+              <PopoverButton
+                :class="open ? 'border-gray-300 bg-gray-50' : 'text-opacity-90'"
+                class="group inline-flex items-center px-3 py-2 rounded-xl shadow border-2 border-gray-900/10 text-base font-medium text-gray-700 hover:text-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+              >
+                <IconIc:round-filter-list class="mr-2" />
+                <span>តម្រង</span>
+              </PopoverButton>
+              <transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="translate-y-1 opacity-0"
+                enter-to-class="translate-y-0 opacity-100"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="translate-y-0 opacity-100"
+                leave-to-class="translate-y-1 opacity-0"
+              >
+                <PopoverPanel
+                  class="absolute right-0 z-30 mt-3 w-[380px] lg:w-70 -translate-x-1/2 transform"
+                >
+                  <div
+                    class="overflow-hidden rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                  >
+                    <div class="p-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-gray-700 font-medium">
+                          តម្រង
+                        </h1>
+                        <button
+                          type="button"
+                          class="text-base underline text-gray-500"
+                        >
+                          លុបតម្រង
+                        </button>
+                      </div>
+                      <div class="space-y-3 pt-3">
+                        <Disclosure v-slot="{ open }">
+                          <DisclosureButton
+                            class="w-full flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                          >
+                            <span>ប្រភេទផលិតផល</span>
+                            <IconIc:round-keyboard-arrow-down
+                              :class="[
+                                open ? 'rotate-180' : 'rotate-0',
+                                'transform-gpu transition-all duration-200',
+                              ]"
+                            />
+                          </DisclosureButton>
+                          <DisclosurePanel
+                            class="w-full flex flex-row flex-wrap gap-2 p-2 text-sm text-gray-500"
+                          >
+                            <div
+                              v-for="c in product.categories"
+                              :key="c.value"
+                              class="relative flex items-center gap-3 px-2 py-1 shadow border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer"
+                            >
+                              <span>
+                                {{ c.name }}
+                              </span>
+                            </div>
+                          </DisclosurePanel>
+                        </Disclosure>
+                        <Disclosure v-slot="{ open }">
+                          <DisclosureButton
+                            class="w-full flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                          >
+                            <span>ប្រភេទត្បូង</span>
+                            <IconIc:round-keyboard-arrow-down
+                              :class="[
+                                open ? 'rotate-180' : 'rotate-0',
+                                'transform-gpu transition-all duration-200',
+                              ]"
+                            />
+                          </DisclosureButton>
+                          <DisclosurePanel
+                            class="w-full flex flex-row flex-wrap gap-2 p-2 text-sm text-gray-500"
+                          >
+                            <div
+                              v-for="c in product.gemstones"
+                              :key="c.value"
+                              class="relative flex items-center gap-3 px-2 py-1 shadow border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer"
+                            >
+                              <span>
+                                {{ c.name }}
+                              </span>
+                            </div>
+                          </DisclosurePanel>
+                        </Disclosure>
+                      </div>
+                    </div>
+                  </div>
+                </PopoverPanel>
+              </transition>
+            </Popover>
+          </div>
+          <div id="list" class="grid grid-cols-3 gap-3 mt-5 px-3">
             <CardProductActive
               v-for="product in products.data"
               :key="product.id"
@@ -281,7 +430,7 @@ const onSelectProduct = (p: IProduct) => {
             />
           </div>
         </div>
-        <Button size="sm" class="float-right">បញ្ជាក់ការបញ្ជាទិញ</Button>
+        <!--        <Button size="sm" class="float-right">បញ្ជាក់ការបញ្ជាទិញ</Button>-->
       </Modal>
     </PageBody>
   </PageWrapper>

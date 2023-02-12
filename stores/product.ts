@@ -15,6 +15,7 @@ export interface IProductState {
   categories: IProductCategory[]
   gemstones: IProductCategory[]
   product: IProduct
+  products: Array<IProduct>
 }
 
 export const useProduct = defineStore('product', {
@@ -81,6 +82,7 @@ export const useProduct = defineStore('product', {
       fileIds: [],
       filePaths: [],
     },
+    products: [],
   }),
   actions: {
     clearFiles() {
@@ -112,6 +114,9 @@ export const useProduct = defineStore('product', {
     },
     updateProduct(product: IProduct) {
       this.product = product
+    },
+    pushProducts(products: Array<IProduct>) {
+      this.products.push(...products)
     },
     async uploadFile(file: File | Blob, filename: string): Promise<{} | null> {
       const client = useSupabaseClient()

@@ -5,11 +5,15 @@ const props = defineProps<{
   price?: string
 }>()
 
-const number = ref<number>(0)
+const emit = defineEmits(['onDelete'])
+
+const onClick = () => {
+  emit('onDelete')
+}
 </script>
 
 <template>
-  <div class="w-full py-3">
+  <div class="relative w-full py-3">
     <div class="flex items-center">
       <div
         class="flex-none w-20 aspect-square border border-gray-200 shadow shadow-gray-300 rounded-lg overflow-hidden"
@@ -29,9 +33,18 @@ const number = ref<number>(0)
             {{ price }}
           </span>
         </div>
-        <vs-input-number v-model="number" class="w-1/3" />
+      </div>
+      <div v-if="$slots" class="ml-auto self-end">
+        <slot />
       </div>
     </div>
+    <!-- Delete Icon -->
+    <a
+      class="inline-block absolute top-2 right-0 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 transform transition-all duration-200 hover:-translate-y-1.1 cursor-pointer"
+      @click="onClick"
+    >
+      <IconWpf:full-trash />
+    </a>
   </div>
 </template>
 

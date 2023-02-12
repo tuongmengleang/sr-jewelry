@@ -10245,6 +10245,11 @@ uvu@^0.5.0:
     kleur "^4.0.3"
     sade "^1.7.3"
 
+v3-infinite-loading@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/v3-infinite-loading/-/v3-infinite-loading-1.2.2.tgz#19565772cc255bd87369b3ad46090cb621a42d3b"
+  integrity sha512-MWJc6yChnqeUasBFJ3Enu8IGPcQgRMSTrAEtT1MsHBEx+QjwvNTaY8o+8V9DgVt1MVhQSl3MC55hsaWLJmpRMw==
+
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/v8-compile-cache-lib/-/v8-compile-cache-lib-3.0.1.tgz#6336e8d71965cb3d35a1bbb7868445a7c05264bf"

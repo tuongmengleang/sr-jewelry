@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     'IconGg:menuLeftAlt': typeof import('~icons/gg/menu-left-alt')['default']
     'IconHeroicons:trash': typeof import('~icons/heroicons/trash')['default']
     'IconHumbleicons:pencil': typeof import('~icons/humbleicons/pencil')['default']
+    'IconIc:baselineFilterAlt': typeof import('~icons/ic/baseline-filter-alt')['default']
     'IconIc:outlineAddShoppingCart': typeof import('~icons/ic/outline-add-shopping-cart')['default']
     'IconIc:roundCheckCircle': typeof import('~icons/ic/round-check-circle')['default']
     'IconIc:roundFilterList': typeof import('~icons/ic/round-filter-list')['default']
