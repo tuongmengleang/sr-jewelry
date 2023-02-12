@@ -30,4 +30,5 @@ export interface IProduct {
   product_images?: IProductImage[]
   fileIds?: Array<string>
   filePaths?: Array<string>
+  active?: boolean
 }

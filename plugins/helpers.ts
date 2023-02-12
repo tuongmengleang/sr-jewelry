@@ -33,6 +33,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         return bytes.toFixed(dp) + ' ' + units[u]
       },
+      humanPrice: (amount: number) => {
+        const formatter = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })
+        return formatter.format(amount)
+      },
       truncateMiddle: (text: string) => {
         const maxLength = 20
         const ext = text

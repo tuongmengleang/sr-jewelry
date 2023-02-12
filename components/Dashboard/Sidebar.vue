@@ -70,7 +70,7 @@ const isSubMenuActive = (parentRoute: string) => {
             :to="{ name: menu.route }"
             :class="{ active: isSubMenuActive(`/${menu.route}`) }"
           >
-            <Icon :name="menu.icon" size="1.3rem" />
+            <Icon :name="menu.icon" class="w-5 h-5" />
             <span>{{ menu.title }}</span>
           </RouterLink>
         </li>
