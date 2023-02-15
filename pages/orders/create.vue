@@ -18,6 +18,8 @@ import { useCustomer } from '~/stores/customer'
 import { ICustomer } from '~/types/ICustomer'
 import { IProduct } from '~/types/IProduct'
 import { useProduct } from '~/stores/product'
+import { useUI } from '~/stores/ui'
+import useToast from '~/composables/useToast'
 
 definePageMeta({
   layout: 'master',
@@ -32,9 +34,13 @@ useHead({
 const { $profileUrl, $storageFile, $getPagination, $humanPrice } = useNuxtApp()
 const customer: any = useCustomer()
 const product: any = useProduct()
-const selectedCustomer = ref<ICustomer | null>()
+const ui = useUI()
+const selectedCustomer: any = ref<ICustomer | null>()
 const query = ref<string>('')
 const searchText = ref<string>('')
+const searchInput: any = ref<HTMLElement | null>(null)
+const category = ref<number | null>(null)
+const gemstone = ref<number | null>(null)
 const comboBtn: any = ref<HTMLButtonElement>()
 const active = ref<boolean>(false)
 const activeProducts: any = ref<Array<string>>([])
@@ -57,13 +63,16 @@ const {
   })
 )
 
-const { data: products }: any = await useAsyncData(
+const { data: products, refresh: refreshProducts }: any = await useAsyncData(
   'products',
   (): Promise<void> => {
-    const { from, to } = $getPagination(0, 6)
+    const { from, to } = $getPagination(0, 12)
     return $fetch('/api/products', {
       method: 'GET',
       params: {
+        name: searchText.value,
+        category: category.value || '',
+        gemstone: gemstone.value || '',
         from,
         to,
       },
@@ -78,6 +87,10 @@ watch(activeProducts.value, () => {
       (totalPrice.value +=
         parseInt(activeProduct.price) * parseInt(activeProduct.countOrder))
   )
+})
+
+watch([searchText, category, gemstone], () => {
+  refreshProducts()
 })
 
 /* methods */
@@ -118,6 +131,37 @@ const onDeleteOrder = (index: number, productId: string): void => {
     (item: IProduct) => item.id === productId
   )
   products.value.data[i].active = false
+}
+
+const clearFilter = (): void => {
+  searchText.value = ''
+  searchInput.value.setValue('')
+  category.value = null
+  gemstone.value = null
+  refreshProducts()
+}
+
+const onFilterProduct = (c, g): void => {
+  category.value = c
+  gemstone.value = g
+}
+
+const onPurchase = async (): Promise<any> => {
+  ui.updateIsLoading(true)
+  await useAsyncData('order', () =>
+    $fetch('/api/orders', {
+      method: 'POST',
+      body: {
+        customerId: selectedCustomer.value.id,
+        products: activeProducts.value,
+      },
+    })
+  )
+  ui.updateIsLoading(false)
+  products.value.data.map((p: IProduct) => (p.active = false))
+  selectedCustomer.value = null
+  activeProducts.value = []
+  useToast().success('បញ្ជាទិញដោយជោគជ័យ')
 }
 </script>
 
@@ -300,7 +344,9 @@ const onDeleteOrder = (index: number, productId: string): void => {
               v-if="selectedCustomer && activeProducts.length > 0"
               class="w-full pt-5"
             >
-              <Button> បញ្ជាទិញ </Button>
+              <Button :loading="ui.isLoading" @click="onPurchase">
+                បញ្ជាទិញ
+              </Button>
             </div>
           </div>
         </div>
@@ -309,9 +355,10 @@ const onDeleteOrder = (index: number, productId: string): void => {
       <!-- Modal Search Products -->
       <Modal v-model="active" :outside-close="true">
         <h1 class="text-xl text-gray-900 font-semibold">បន្ថែមផលិតផល</h1>
-        <div class="py-4 max-h-[500px] overflow-y-auto custom-scrollbar-thin">
+        <div class="py-4 max-h-[70vh] overflow-y-auto custom-scrollbar-thin">
           <div class="w-full flex items-center gap-3">
             <FormSearchInput
+              ref="searchInput"
               v-model="searchText"
               name="search"
               placeholder="ស្វែងរកផលិតផល"
@@ -348,6 +395,7 @@ const onDeleteOrder = (index: number, productId: string): void => {
                         <button
                           type="button"
                           class="text-base underline text-gray-500"
+                          @click="clearFilter"
                         >
                           លុបតម្រង
                         </button>
@@ -372,10 +420,23 @@ const onDeleteOrder = (index: number, productId: string): void => {
                               v-for="c in product.categories"
                               :key="c.value"
                               class="relative flex items-center gap-3 px-2 py-1 shadow border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer"
+                              :class="{
+                                'bg-gray-100 text-gray-700 font-semibold':
+                                  category === c.value,
+                              }"
+                              @click="onFilterProduct(c.value, gemstone)"
                             >
                               <span>
                                 {{ c.name }}
                               </span>
+                              <div
+                                v-if="category === c.value"
+                                class="absolute -top-1.5 -right-1 p-[2px] bg-primary rounded-full"
+                              >
+                                <IconTypcn:tick
+                                  class="text-[10px] text-white"
+                                />
+                              </div>
                             </div>
                           </DisclosurePanel>
                         </Disclosure>
@@ -398,10 +459,23 @@ const onDeleteOrder = (index: number, productId: string): void => {
                               v-for="c in product.gemstones"
                               :key="c.value"
                               class="relative flex items-center gap-3 px-2 py-1 shadow border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer"
+                              :class="{
+                                'bg-gray-100 text-gray-700 font-semibold':
+                                  gemstone === c.value,
+                              }"
+                              @click="onFilterProduct(category, c.value)"
                             >
                               <span>
                                 {{ c.name }}
                               </span>
+                              <div
+                                v-if="gemstone === c.value"
+                                class="absolute -top-1.5 -right-1 p-[2px] bg-primary rounded-full"
+                              >
+                                <IconTypcn:tick
+                                  class="text-[10px] text-white"
+                                />
+                              </div>
                             </div>
                           </DisclosurePanel>
                         </Disclosure>
@@ -412,22 +486,30 @@ const onDeleteOrder = (index: number, productId: string): void => {
               </transition>
             </Popover>
           </div>
-          <div id="list" class="grid grid-cols-3 gap-3 mt-5 px-3">
-            <CardProductActive
-              v-for="product in products.data"
-              :key="product.id"
-              :image="
-                product.product_images[0].image_path
-                  ? $storageFile(
-                      'products/' + product.product_images[0].image_path
-                    )
-                  : ''
-              "
-              :title="product.name"
-              :price="$humanPrice(product.price)"
-              :is-active="product.active"
-              @click="onSelectProduct(product)"
-            />
+          <div
+            id="list"
+            class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5 px-3"
+          >
+            <template v-if="products.data.length > 0">
+              <CardProductActive
+                v-for="product in products.data"
+                :key="product.id"
+                :image="
+                  product.product_images[0].image_path
+                    ? $storageFile(
+                        'products/' + product.product_images[0].image_path
+                      )
+                    : ''
+                "
+                :title="product.name"
+                :price="$humanPrice(product.price)"
+                :is-active="product.active"
+                @click="onSelectProduct(product)"
+              />
+            </template>
+            <div v-else class="col-span-2 md:col-span-4 text-center py-10">
+              <CardEmpty class="mx-auto" />
+            </div>
           </div>
         </div>
         <!--        <Button size="sm" class="float-right">បញ្ជាក់ការបញ្ជាទិញ</Button>-->

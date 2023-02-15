@@ -10,11 +10,19 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue'])
 // states
 const modelValue = useSyncProps<string>(props, 'modelValue', emit)
+const inputSearch: any = ref<HTMLElement | null>(null)
 
 /* methods */
-const onInput = debounce((e: any) => {
+const onInput = debounce((e: any): void => {
   modelValue.value = e.target.value
 }, props.debounce)
+
+const setValue = (value: string): void => {
+  modelValue.value = value
+  inputSearch.value.value = value
+}
+
+defineExpose({ setValue })
 </script>
 
 <template>
@@ -25,6 +33,7 @@ const onInput = debounce((e: any) => {
       </div>
       <input
         id="name"
+        ref="inputSearch"
         class="input"
         type="text"
         autocomplete="off"
