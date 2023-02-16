@@ -31,5 +31,5 @@ export interface IProduct {
   fileIds?: Array<string>
   filePaths?: Array<string>
   active?: boolean
-  countOrder?: number
+  w?: number
 }
