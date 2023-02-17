@@ -243,9 +243,9 @@ const onPurchase = async (): Promise<any> => {
                         <Avatar>
                           <img
                             :src="
-                              item.avatar
-                                ? $profileUrl('customers/' + item.avatar)
-                                : ''
+                              $profileUrl(
+                                item.avatar ? 'customers/' + item.avatar : ''
+                              )
                             "
                             alt=""
                           />
@@ -353,7 +353,7 @@ const onPurchase = async (): Promise<any> => {
       </div>
 
       <!-- Modal Search Products -->
-      <Modal v-model="active" :outside-close="true">
+      <Modal v-model="active" :outside-close="true" size="2xl">
         <h1 class="text-xl text-gray-900 font-semibold">បន្ថែមផលិតផល</h1>
         <div class="py-4 max-h-[70vh] overflow-y-auto custom-scrollbar-thin">
           <div class="w-full flex items-center gap-3">

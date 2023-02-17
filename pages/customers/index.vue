@@ -367,7 +367,7 @@ const onConfirmDelete = async (): Promise<void> => {
           <h6 class="text-base text-gray-600 font-medium">
             តើអ្នកប្រាកដថាចង់លុប
             <strong>"{{ customer!.customer!.name }}"</strong> មែនទែ?
-            បញ្ជាក់រាល់ការលុបមិនអាចទាញយកវិញបានទេ 🙏
+            បញ្ជាក់រាល់ការលុបមិនអាចទាញយកវិញបានទេ
           </h6>
         </div>
         <div class="w-full flex items-center gap-5 pt-5">

@@ -6,10 +6,23 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue'
-const props = defineProps<{
+const props: any = defineProps<{
   modelValue: boolean
   outsideClose?: boolean
+  size?: string
 }>()
+
+const sizes = reactive<{
+  [key: string]: string
+}>({
+  '2xl': 'max-w-2xl',
+  xl: 'max-w-xl',
+  lg: 'max-w-lg',
+  md: 'max-w-md',
+  sm: 'max-w-sm',
+  xs: 'max-w-xs',
+})
+const selectedSize = computed(() => sizes[props.size] || sizes.md)
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -47,7 +60,7 @@ const closeModal = (): void => {
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-2xl transform rounded-2xl bg-white p-5 text-left align-middle shadow-xl transition-all"
+              :class="`${selectedSize} w-full transform rounded-2xl bg-white p-5 text-left align-middle shadow-xl transition-all`"
             >
               <slot />
             </DialogPanel>

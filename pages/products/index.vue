@@ -484,7 +484,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
             តើអ្នកប្រាកដថាចង់លុប
             <strong>"{{ product.product.name }}"</strong> មែនទែ?
             <br />
-            បញ្ជាក់រាល់ការលុបមិនអាចទាញយកវិញបានទេ 🙏
+            បញ្ជាក់រាល់ការលុបមិនអាចទាញយកវិញបានទេ
           </h6>
         </div>
         <div class="w-full flex items-center gap-5 pt-5">

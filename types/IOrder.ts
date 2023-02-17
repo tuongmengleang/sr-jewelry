@@ -8,6 +8,6 @@ export interface IOrderItems {
   id?: string
   order_id: string
   product_id: string
-  quantity: number
-  price: number
+  quantity?: number
+  price?: number
 }
