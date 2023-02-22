@@ -1,3 +1,4 @@
+import path from 'path'
 import { defineConfig } from 'windicss/helpers'
 import type { Plugin } from 'windicss/types/interfaces'
 // colors

@@ -102,6 +102,9 @@ export default defineNuxtPlugin((nuxtApp) => {
           to: currentPage * itemsPerPage,
         }
       },
+      getGenerateID() {
+        return `#SR-${Date.now()}`
+      },
     },
   }
 })

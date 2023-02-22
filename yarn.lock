@@ -3877,6 +3877,11 @@ data-uri-to-buffer@^4.0.0:
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.0.tgz#b5db46aea50f6176428ac05b73be39a57701a64b"
   integrity sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==
 
+dayjs@^1.11.7:
+  version "1.11.7"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
+  integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
+
 de-indent@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/de-indent/-/de-indent-1.0.2.tgz#b2038e846dc33baa5796128d0804b455b8c1e21d"
@@ -6512,6 +6517,11 @@ listr2@^5.0.5:
     rxjs "^7.5.7"
     through "^2.3.8"
     wrap-ansi "^7.0.0"
+
+litepie-datepicker@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/litepie-datepicker/-/litepie-datepicker-1.0.14.tgz#8c6fd91e574bbd6d26692133568992510ef80790"
+  integrity sha512-u1BAsvLv5r7grMrKbRXKXPfk5okiYJBF247PWr5MGmbVxxWmDCoqQWtMdaHrQUzA/BQiU6J6L1nri0QkJISjyA==
 
 loader-runner@^4.2.0:
   version "4.3.0"

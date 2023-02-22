@@ -3,12 +3,12 @@ import { serverSupabaseClient } from '#supabase/server'
 import { IProduct } from '~/types/IProduct'
 export default defineEventHandler(async (event): Promise<any> => {
   const client: any = serverSupabaseClient(event)
-  const { customerId, products }: any = await readBody(event)
+  const { orderId, customerId, products }: any = await readBody(event)
 
   // Insert Order
   const { data, error } = await client
     .from('orders')
-    .insert([{ customer_id: customerId, status: 1 }])
+    .insert([{ customer_id: customerId, order_id: orderId }])
     .select('id')
 
   // Insert OrderItems

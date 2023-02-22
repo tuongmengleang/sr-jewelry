@@ -31,7 +31,13 @@ useHead({
 })
 
 /* states */
-const { $profileUrl, $storageFile, $getPagination, $humanPrice } = useNuxtApp()
+const {
+  $profileUrl,
+  $storageFile,
+  $getPagination,
+  $humanPrice,
+  $getGenerateID,
+} = useNuxtApp()
 const customer: any = useCustomer()
 const product: any = useProduct()
 const ui = useUI()
@@ -152,6 +158,7 @@ const onPurchase = async (): Promise<any> => {
     $fetch('/api/orders', {
       method: 'POST',
       body: {
+        orderId: $getGenerateID(),
         customerId: selectedCustomer.value.id,
         products: activeProducts.value,
       },
@@ -176,8 +183,8 @@ const onPurchase = async (): Promise<any> => {
         <div
           class="col-span-12 lg:col-start-2 lg:col-span-8 xl:col-start-4 xl:col-span-4 w-full"
         >
+          <!-- Customer -->
           <div class="space-y-3">
-            <!-- Customer -->
             <label class="text-base text-gray-800 font-medium">
               ជ្រើសរើសអតិថិជន
             </label>
@@ -512,7 +519,6 @@ const onPurchase = async (): Promise<any> => {
             </div>
           </div>
         </div>
-        <!--        <Button size="sm" class="float-right">បញ្ជាក់ការបញ្ជាទិញ</Button>-->
       </Modal>
     </PageBody>
   </PageWrapper>

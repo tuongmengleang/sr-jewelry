@@ -1,9 +1,20 @@
 import { defineStore } from 'pinia'
+import { IOrder } from '~/types/IOrder'
 
-export interface IOrderState {}
+interface IOrderState {
+  order: IOrder | null
+}
 
-export const useOrder = defineStore('orders', {
-  state: (): IOrderState => ({}),
-  actions: {},
-  getters: {},
+export const useOrder = defineStore('order', {
+  state: (): IOrderState => ({
+    order: null,
+  }),
+  getters: {
+    getOrder: (state) => state.order,
+  },
+  actions: {
+    setOrder(orderItem: IOrder): void {
+      this.order = orderItem
+    },
+  },
 })

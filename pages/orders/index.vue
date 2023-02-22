@@ -4,6 +4,8 @@ import 'gridjs/dist/theme/mermaid.css'
 import moment from 'moment'
 import useToast from '~/composables/useToast'
 import { useUI } from '~/stores/ui'
+import { useOrder } from '~/stores/orders'
+import { IOrder } from '~/types/IOrder'
 
 definePageMeta({
   layout: 'master',
@@ -16,12 +18,15 @@ useHead({
 
 /* states */
 const { $humanPrice, $profileUrl, $storageFile } = useNuxtApp()
+const router = useRouter()
 const grid: any = new Grid()
 const table = ref<HTMLElement>()
 const activeDelete = ref<boolean>(false)
+const activeView = ref<boolean>(false)
 const activeId = ref<string>('')
 const client = useSupabaseClient()
 const uiStore = useUI()
+const orderStore: any = useOrder()
 
 /* mounted */
 onMounted(() => {
@@ -37,40 +42,67 @@ const renderData = (): void => {
         hidden: true,
       },
       {
+        name: 'លេខសម្គាល់',
+        width: '220px',
+        formatter: (_, row) =>
+          html(`
+            <p>${row.cells[1].data}</p>
+          `),
+      },
+      {
         name: 'អតិថិជន',
-        width: '150px',
+        width: '220px',
         formatter: (_, row) =>
           html(`
             <div class="w-full flex items-center gap-x-3">
               <div class="flex-none w-10 h-10 rounded-full overflow-hidden">
-                  <img src="${$profileUrl(
-                    row.cells[1].data.avatar
-                      ? 'customers/' + row.cells[1].data.avatar
+                  <img class="w-full h-full object-cover object-center" src="${$profileUrl(
+                    row.cells[2].data.avatar
+                      ? 'customers/' + row.cells[2].data.avatar
                       : ''
                   )}" alt="">
               </div>
-                <p>${row.cells[1].data.name}</p>
+              <p>${row.cells[2].data.name}</p>
             </div>
         `),
       },
       {
         name: 'បញ្ជាទិញ',
-        width: '150px',
+        width: '250px',
         formatter: (_, row) =>
           html(`
-            <div class="w-full flex items-center gap-x-3">
-              <div class="flex-none w-10 h-10 rounded-lg overflow-hidden border shadow">
-                  <img src="${
-                    row.cells[2].data.product_images.length > 0
-                      ? $profileUrl(
-                          'products/' +
-                            row.cells[2].data.product_images[0].image_path
-                        )
-                      : ''
-                  }" alt="">
-              </div>
-                <p>${row.cells[2].data.name}</p>
+            <div class="flex -space-x-4">
+              ${
+                row.cells[3].data.length > 0
+                  ? row.cells[3].data.map(
+                      (order) =>
+                        `<img class="w-12 h-12 border-2 border-white rounded-full dark:border-gray-800" src="${$storageFile(
+                          order.products.product_images[0].image_path
+                            ? 'products/' +
+                                order.products.product_images[0].image_path
+                            : ''
+                        )}" alt="">`
+                    )
+                  : ''
+              }
             </div>
+          `),
+      },
+      {
+        name: 'តម្លៃសរុប',
+        width: '150px',
+        sort: {
+          enabled: true,
+        },
+        formatter: (_, row) =>
+          html(`
+            <p>
+              ${$humanPrice(
+                row.cells[3].data
+                  .map((item) => item.price)
+                  .reduce((a, b) => a + b)
+              )}
+            </p>
           `),
       },
       {
@@ -78,18 +110,7 @@ const renderData = (): void => {
         width: '150px',
         formatter: (_, row) =>
           html(`
-            <p>${moment(row.cells[3].data).format('D.MM.YYYY')}</p>
-          `),
-      },
-      {
-        name: 'តម្លៃ',
-        width: '150px',
-        sort: {
-          enabled: true,
-        },
-        formatter: (_, row) =>
-          html(`
-            <p class="font-medium">${$humanPrice(row.cells[4].data)}</p>
+            <p>${moment(row.cells[4].data).format('D-MMM-YYYY')}</p>
           `),
       },
       {
@@ -105,6 +126,7 @@ const renderData = (): void => {
               {
                 className:
                   'p-1 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all transform duration-150 hover:-translate-y-1 hover:shadow-md',
+                title: 'Delete',
                 onclick: () => {
                   onDelete(row.cells[0].data)
                 },
@@ -118,9 +140,13 @@ const renderData = (): void => {
               {
                 className:
                   'p-1 rounded-full bg-primary-300 hover:bg-primary-400 text-white transition-all transform duration-150 hover:-translate-y-1 hover:shadow-md',
+                title: 'View',
+                onclick: () => {
+                  onView(row.cells[5].data)
+                },
               },
               html(`
-                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="m14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2zm0 2a8 8 0 1 0 0 16a8 8 0 0 0 0-16zm0 3a5 5 0 1 1-4.78 3.527A2.499 2.499 0 0 0 12 9.5a2.5 2.5 0 0 0-1.473-2.28A5.01 5.01 0 0 1 12 7z"/></svg>
               `)
             ),
           ])
@@ -132,16 +158,17 @@ const renderData = (): void => {
       then: (data: any) =>
         data.data.map((resp: any) => [
           resp.id,
-          resp.orders.customers,
-          resp.products,
+          resp.order_id,
+          resp.customers,
+          resp.order_items,
           resp.created_at,
-          resp.price,
+          resp,
         ]),
       total: (data) => data.count,
     },
     pagination: {
       enabled: true,
-      limit: 9,
+      limit: 10,
       server: {
         url: (prev, page, limit) => {
           let path = ''
@@ -177,7 +204,7 @@ const onDelete = (id: string): void => {
 const onConfirmDelete = async (): Promise<any> => {
   uiStore.updateIsLoading(true)
   const { data, error } = await client
-    .from('order_items')
+    .from('orders')
     .delete()
     .eq('id', activeId.value)
 
@@ -185,6 +212,11 @@ const onConfirmDelete = async (): Promise<any> => {
   activeDelete.value = false
   uiStore.updateIsLoading(false)
   grid.updateConfig().forceRender()
+}
+
+const onView = (order: IOrder): void => {
+  activeView.value = true
+  orderStore.setOrder(order)
 }
 </script>
 
@@ -194,8 +226,10 @@ const onConfirmDelete = async (): Promise<any> => {
       <PageTitle class="!text-lg" text="ការបញ្ជាទិញ" />
       <PageBreadcrumbs />
     </PageHeader>
-    <PageBody class="pb-10">
-      <div class="w-full flex items-center">
+    <PageBody class="relative pb-10">
+      <div
+        class="w-full flex items-center relative lg:absolute lg:right-0 lg:top-7"
+      >
         <NuxtLink :to="{ name: 'orders-create' }" class="ml-auto">
           <Button>
             <IconIc:outline-add-shopping-cart class="text-lg mr-2" />
@@ -236,12 +270,68 @@ const onConfirmDelete = async (): Promise<any> => {
           </Button>
         </div>
       </Modal>
+
+      <!-- Modal View -->
+      <Modal v-model="activeView" :outside-close="true" size="2xl">
+        <h1 class="text-xl text-gray-900 font-semibold">
+          ព័ត៌មានលម្អិតនៃការបញ្ជាទិញ
+        </h1>
+        <div class="py-4">
+          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table
+              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+            >
+              <thead
+                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <tr>
+                  <th scope="col" class="px-6 py-3">ផលិតផល</th>
+                  <th scope="col" class="px-6 py-3">តម្លៃរាយ</th>
+                  <th scope="col" class="px-6 py-3">បរិមាណ</th>
+                  <th scope="col" class="px-6 py-3">តម្លៃសរុប</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, idx) in orderStore.getOrder.order_items"
+                  :key="idx"
+                  class="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                >
+                  <th
+                    scope="row"
+                    class="px-6 py-4 text-base font-medium text-gray-900 whitespace-nowrap"
+                  >
+                    <div class="flex items-center gap-3">
+                      <img
+                        class="w-14 flex-none aspect-square rounded-full object-cover object-center"
+                        :src="
+                          $storageFile(
+                            item.products.product_images[0].image_path
+                              ? 'products/' +
+                                  item.products.product_images[0].image_path
+                              : ''
+                          )
+                        "
+                        alt=""
+                      />
+                      <p>{{ item.products.name }}</p>
+                    </div>
+                  </th>
+                  <td class="px-6 py-4">
+                    {{ $humanPrice(item.products.price) }}
+                  </td>
+                  <td class="px-6 py-4">{{ item.quantity }}</td>
+                  <td class="px-6 py-4">
+                    {{ $humanPrice(item.price) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Modal>
     </PageBody>
   </PageWrapper>
 </template>
 
-<style lang="scss">
-.grid-table {
-  @apply w-full overflow-auto;
-}
-</style>
+<style lang="scss"></style>

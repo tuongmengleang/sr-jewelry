@@ -94,3 +94,22 @@ html.dark {
     z-index: 99999;
   }
 }
+
+// Custom GridJs
+.grid-table {
+  @apply w-full overflow-auto;
+
+  .gridjs-tbody {
+    tr {
+      &:nth-child(even) {
+        td {
+          @apply bg-gray-50;
+        }
+      }
+    }
+  }
+  th,
+  td {
+    border: none !important;
+  }
+}
