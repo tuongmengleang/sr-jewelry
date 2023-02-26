@@ -1,3 +1,4 @@
+import moment from 'moment'
 // @ts-ignore
 import placeholder from '~/assets/images/placeholder.jpg'
 // @ts-ignore
@@ -104,6 +105,51 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       getGenerateID() {
         return `#SR-${Date.now()}`
+      },
+      getDateRangeByKeyword(keyword: string) {
+        let dateRange: string[] = []
+        switch (keyword) {
+          case 'this-week':
+            dateRange = [
+              moment()
+                .subtract(1, 'weeks')
+                .startOf('week')
+                .format('YYYY/MM/DD'),
+              moment(Date.now()).format('YYYY/MM/DD'),
+            ]
+            break
+          case 'last-week':
+            dateRange = [
+              moment()
+                .subtract(2, 'weeks')
+                .startOf('week')
+                .format('YYYY/MM/DD'),
+              moment().subtract(2, 'weeks').endOf('week').format('YYYY/MM/DD'),
+            ]
+            break
+          case 'this-month':
+            dateRange = [
+              moment().startOf('month').format('YYYY/MM/DD'),
+              moment().endOf('month').format('YYYY/MM/DD'),
+            ]
+            break
+          case 'this-year':
+            dateRange = [
+              moment().startOf('year').format('YYYY/MM/DD'),
+              moment().endOf('year').format('YYYY/MM/DD'),
+            ]
+            break
+          case 'last-year':
+            dateRange = [
+              moment().subtract(1, 'year').startOf('year').format('YYYY/MM/DD'),
+              moment().subtract(1, 'year').endOf('year').format('YYYY/MM/DD'),
+            ]
+            break
+          default:
+            dateRange = ['', '']
+            break
+        }
+        return dateRange
       },
     },
   }

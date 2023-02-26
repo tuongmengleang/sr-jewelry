@@ -29,8 +29,6 @@ const size = ref<number>(12)
 const activeDelete = ref<boolean>(false)
 const activeView = ref<boolean>(false)
 const searchText = ref<string>('')
-const priceRange = ref<number[]>([300, 1200])
-const openFilter = ref<boolean>(false)
 
 const category = computed(() => route.query.category)
 const gemstone = computed(() => route.query.gemstone)
@@ -117,7 +115,7 @@ const setFilterQuery = (category: any, gemstone: any): void => {
         <!-- Search by name -->
         <FormSearchInput
           v-model="searchText"
-          class="w-auto"
+          class="w-70"
           name="search"
           placeholder="ស្វែងរកផលិតផលដោយឈ្មោះ"
           :debounce="1500"
