@@ -17,7 +17,7 @@ useHead({
 })
 
 /* states */
-const { $humanPrice, $profileUrl, $storageFile, $VueHtmlToPaper } = useNuxtApp()
+const { $humanPrice, $profileUrl, $storageFile } = useNuxtApp()
 const router = useRouter()
 const grid: any = new Grid()
 const table = ref<HTMLElement>()

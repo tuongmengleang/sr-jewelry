@@ -25,7 +25,11 @@ const totalPrice: any = computed(() =>
 </script>
 
 <template>
-  <div id="invoice" class="relative w-[21cm] min-h-[29.7cm] bg-white p-10">
+  <!--  w-[21cm] min-h-[29.7cm]-->
+  <div
+    id="invoice"
+    class="invoice-container w-[21cm] min-h-[29.7cm] relative bg-white p-10"
+  >
     <!-- Invoice Head -->
     <div class="w-full flex items-center justify-between">
       <div class="flex items-center">
@@ -34,7 +38,7 @@ const totalPrice: any = computed(() =>
           src="/assets/logo.webp"
           alt="SR Jewelry"
         />
-        <h2 class="ml-4 text-3xl font-semibold">
+        <h2 class="title ml-4 text-3xl font-semibold">
           SR Jewelry <br />
           ជាងស្រស់ គីមរ៉ុង
         </h2>
@@ -56,12 +60,14 @@ const totalPrice: any = computed(() =>
         <div class="w-3/4 h-[1px] bg-gray-300 mt-1"></div>
         <ul class="pt-2 space-y-1">
           <li class="flex items-center gap-2">
-            <IconRi:user-3-line class="text-gray-600" />
-            <h2 class="text-lg font-medium text-gray-800">{{ buyerName }}</h2>
+            <IconRi:user-3-line class="flex-none text-gray-600" />
+            <h2 class="text-lg font-medium text-gray-800">
+              {{ buyerName }}
+            </h2>
           </li>
           <li v-if="buyerPhone" class="flex items-center gap-2">
             <IconIc:baseline-phone class="text-gray-600" />
-            <h2 class="text-base text-gray-600">{{ buyerPhone }}</h2>
+            <div class="w-full text-base text-gray-600">{{ buyerPhone }}</div>
           </li>
         </ul>
       </div>
@@ -74,7 +80,9 @@ const totalPrice: any = computed(() =>
             <h2 class="text-lg font-medium text-gray-800">Sr Jewelry</h2>
           </li>
           <li class="flex items-center gap-2">
-            <IconIc:baseline-phone class="text-gray-600" />
+            <IconIc:baseline-phone
+              class="flex-none self-start mt-1 text-gray-600"
+            />
             <h2 class="text-base text-gray-600">
               096 477 5971/069 605 960/077 869 656
             </h2>
@@ -83,11 +91,11 @@ const totalPrice: any = computed(() =>
             <IconIc:round-location-on
               class="flex-none self-start mt-1 text-gray-600"
             />
-            <h2 class="text-base text-gray-600">
+            <div class="w-full text-base text-gray-600">
               តូបលេខ419 ក្នុងផ្សារទួលទំពូង
               <!--              ផ្ទះលេខ #000 ផ្លូវ 35TB ភុូមិសន្សំកុសល២ សង្កាត់បឹងទំពន់ ខណ្ឌមានជ័យ-->
               <!--              រាជធានីភ្នំពេញ-->
-            </h2>
+            </div>
           </li>
         </ul>
       </div>
@@ -115,7 +123,7 @@ const totalPrice: any = computed(() =>
               class="inline-flex items-center gap-3 px-6 py-4 text-base font-medium text-gray-900 whitespace-nowrap"
             >
               <img
-                class="w-20 aspect-square rounded-full shadow-md border"
+                class="w-20 aspect-square rounded-xl shadow-md border"
                 :src="
                   $storageFile(
                     item.products.product_images[0].image_path
@@ -137,17 +145,7 @@ const totalPrice: any = computed(() =>
           </tr>
         </tbody>
       </table>
-      <div class="float-right mt-7">
-        <p class="flex items-center gap-2">
-          <span class="text-sm font-normal text-gray-700">សរុបរង:</span>
-          <span class="ml-auto text-lg font-semibold text-black">
-            {{ $humanPrice(totalPrice) }}
-          </span>
-        </p>
-        <p class="flex items-center gap-2">
-          <span class="text-sm font-normal text-gray-700">ពន្ធ:</span>
-          <span class="ml-auto text-lg font-semibold text-black">0</span>
-        </p>
+      <div class="float-right my-7 pb-5">
         <p class="flex items-center gap-2">
           <span class="text-sm font-normal text-gray-700">សរុប:</span>
           <span class="ml-auto text-lg font-semibold text-black">
@@ -157,9 +155,13 @@ const totalPrice: any = computed(() =>
       </div>
     </div>
     <div class="absolute bottom-3 left-0 w-full text-center">
-      <p>សូមអរគុណចំពោះការគាំទ្រលោកអ្នកមកកាន់ហាងយើងខ្ញុំ🫶🏻</p>
+      <p>សូមអរគុណចំពោះការគាំទ្រលោកអ្នកមកកាន់ហាងយើងខ្ញុំ</p>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+* {
+  print-color-adjust: exact;
+}
+</style>

@@ -64,7 +64,7 @@ const changeDateRange = (keyword: string, close: any) => {
     >
       <PopoverPanel
         v-slot="{ close }"
-        class="absolute right-0 z-10 mt-1.5 w-full bg-white border shadow-lg rounded-xl"
+        class="absolute right-0 z-50 mt-1.5 w-full bg-white border shadow-lg rounded-xl"
       >
         <div class="grid grid-cols-1">
           <ul class="p-3">

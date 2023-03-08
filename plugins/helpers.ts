@@ -151,6 +151,13 @@ export default defineNuxtPlugin((nuxtApp) => {
         }
         return dateRange
       },
+      downloadImage(data: any, filename = 'invoice.jpeg') {
+        const a = document.createElement('a')
+        a.href = data
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+      },
     },
   }
 })

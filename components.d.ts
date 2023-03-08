@@ -33,6 +33,7 @@ declare module '@vue/runtime-core' {
     'IconMi:userAdd': typeof import('~icons/mi/user-add')['default']
     'IconMingcute:closeCircleLine': typeof import('~icons/mingcute/close-circle-line')['default']
     'IconMingcute:closeFill': typeof import('~icons/mingcute/close-fill')['default']
+    'IconMingcute:download3Line': typeof import('~icons/mingcute/download3-line')['default']
     'IconMingcute:printLine': typeof import('~icons/mingcute/print-line')['default']
     'IconMingcute:upload3Fill': typeof import('~icons/mingcute/upload3-fill')['default']
     'IconOcticon:trash16': typeof import('~icons/octicon/trash16')['default']

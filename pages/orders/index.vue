@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 /* imports */
 import moment from 'moment'
+import html2canvas from 'html2canvas'
 import { useUI } from '~/stores/ui'
 import { useOrder } from '~/stores/orders'
 import useToast from '~/composables/useToast'
@@ -18,6 +19,8 @@ const {
   $humanPrice,
   $pagination,
   $getDateRangeByKeyword,
+  $printJs,
+  $downloadImage,
 } = useNuxtApp()
 const uiStore = useUI()
 const orderStore: any = useOrder()
@@ -30,6 +33,7 @@ const date = ref<string[]>(['', ''])
 const activeDelete = ref<boolean>(false)
 const activeView = ref<boolean>(false)
 const activeId = ref<string>('')
+const invoiceRef = ref<HTMLElement | null>(null)
 
 /* watch */
 watch([currentPage, searchText, date], ([newValue]) => {
@@ -72,6 +76,18 @@ const onConfirmDelete = async (): Promise<any> => {
 const onView = (order: IOrder): void => {
   activeView.value = true
   orderStore.setOrder(order)
+}
+
+const onPrint = (): void => {
+  $printJs('invoiceRef')
+}
+
+const onDownload = (): void => {
+  const element: any = document.getElementById('invoiceRef')
+  html2canvas(element, { useCORS: true }).then((canvas) => {
+    const dataURL = canvas.toDataURL()
+    $downloadImage(dataURL)
+  })
 }
 </script>
 
@@ -145,13 +161,13 @@ const onView = (order: IOrder): void => {
                     "
                     :alt="item.customers.name"
                   />
-                  <p class="text-sm font-medium text-gray-700">
+                  <p class="w-30 text-sm font-medium text-gray-700">
                     {{ item.customers.name }}
                   </p>
                 </div>
               </td>
               <td class="px-6 py-2">
-                <div class="flex -space-x-4">
+                <div class="flex -space-x-4 min-w-40">
                   <img
                     v-for="(order, idx) in item.order_items"
                     :key="idx"
@@ -200,13 +216,6 @@ const onView = (order: IOrder): void => {
                   >
                     <IconRi:eye-2-line />
                   </button>
-                  <button
-                    type="button"
-                    class="p-1 rounded-full bg-amber-500 hover:bg-amber-600 text-white transition-all transform duration-150 hover:-translate-y-1 hover:shadow-md"
-                    title="Print"
-                  >
-                    <IconMingcute:print-line />
-                  </button>
                 </div>
               </td>
             </tr>
@@ -224,7 +233,7 @@ const onView = (order: IOrder): void => {
           </tbody>
         </table>
       </div>
-      <div v-if="data" class="pt-5">
+      <div v-if="data" class="pt-5 z-10">
         <ClientOnly>
           <vs-pagination
             v-model="currentPage"
@@ -265,61 +274,41 @@ const onView = (order: IOrder): void => {
       </Modal>
 
       <!-- Modal View -->
-      <Modal v-model="activeView" :outside-close="true" size="2xl">
-        <h1 class="text-xl text-gray-900 font-semibold">
+      <Modal v-model="activeView" :outside-close="true" size="a4">
+        <h1 v-if="false" class="text-xl text-gray-900 font-semibold">
           ព័ត៌មានលម្អិតនៃការបញ្ជាទិញ
         </h1>
-        <div class="py-4">
-          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table
-              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-            >
-              <thead
-                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        <div class="w-full h-full overflow-auto">
+          <Invoice
+            v-if="orderStore.getOrder && orderStore.getOrder.order_id"
+            id="invoiceRef"
+            ref="invoiceRef"
+            :invoice-no="orderStore.getOrder.order_id"
+            :created-at="orderStore.getOrder.created_at"
+            :buyer-name="orderStore.getOrder.customers.name"
+            :buyer-phone="orderStore.getOrder.customers.phone"
+            :order-items="orderStore.getOrder.order_items"
+          />
+          <div class="fixed bottom-0 right-0">
+            <div class="w-full flex items-center p-5">
+              <Button
+                size="sm"
+                class="ml-4 flex items-center"
+                @click="onDownload"
               >
-                <tr>
-                  <th scope="col" class="px-6 py-3">ផលិតផល</th>
-                  <th scope="col" class="px-6 py-3">ចំនួន</th>
-                  <th scope="col" class="px-6 py-3">តម្លៃរាយ</th>
-                  <th scope="col" class="px-6 py-3">តម្លៃសរុប</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(item, idx) in orderStore.getOrder.order_items"
-                  :key="idx"
-                  class="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
-                >
-                  <th
-                    scope="row"
-                    class="px-6 py-4 text-base font-medium text-gray-900 whitespace-nowrap"
-                  >
-                    <div class="w-[200px] flex items-center gap-3">
-                      <img
-                        class="w-14 flex-none aspect-square rounded-full object-cover object-center"
-                        :src="
-                          $storageFile(
-                            item.products.product_images[0].image_path
-                              ? 'products/' +
-                                  item.products.product_images[0].image_path
-                              : ''
-                          )
-                        "
-                        alt=""
-                      />
-                      <p>{{ item.products.name }}</p>
-                    </div>
-                  </th>
-                  <td class="px-6 py-4">{{ item.quantity }}</td>
-                  <td class="px-6 py-4">
-                    {{ $humanPrice(item.products.price) }}
-                  </td>
-                  <td class="px-6 py-4">
-                    {{ $humanPrice(item.price) }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                <IconMingcute:download-3-line class="mr-2" />
+                ទាញយក
+              </Button>
+              <Button
+                size="sm"
+                class="ml-4 flex items-center"
+                color="danger"
+                @click="onPrint"
+              >
+                <IconMingcute:print-line class="mr-2" />
+                បោះពុម្ព
+              </Button>
+            </div>
           </div>
         </div>
       </Modal>

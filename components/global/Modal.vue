@@ -15,6 +15,7 @@ const props: any = defineProps<{
 const sizes = reactive<{
   [key: string]: string
 }>({
+  a4: 'max-w-[21cm] !p-0 rounded-xl overflow-auto',
   '2xl': 'max-w-2xl',
   xl: 'max-w-xl',
   lg: 'max-w-lg',
