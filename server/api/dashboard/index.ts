@@ -18,9 +18,6 @@ export default defineEventHandler(async (event): Promise<any> => {
     .select('*', { count: 'exact' })
 
   /* Total Revenue */
-  // const { data: totalRevenue } = await client
-  //   .from('order_items')
-  //   .select('quantity, price')
   const { data: totalRevenue } = await client.rpc('sum_price')
 
   return { totalCustomer, totalProducts, totalOrders, totalRevenue }

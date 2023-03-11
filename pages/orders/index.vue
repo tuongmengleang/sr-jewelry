@@ -108,7 +108,7 @@ const onDownload = (): void => {
           :debounce="1500"
         />
         <!-- Filter by Date -->
-        <div class="w-70 md:w-60 lg:w-1/5 self-start">
+        <div class="w-70 md:w-60 lg:w-1/3 self-start">
           <FilterDate v-model="date" />
         </div>
         <NuxtLink :to="{ name: 'orders-create' }" class="self-start md:ml-auto">

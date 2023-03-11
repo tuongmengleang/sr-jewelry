@@ -10,7 +10,7 @@ interface IMenu {
 const menus = computed((): IMenu[] => [
   {
     title: 'ផ្ទាំងគ្រប់គ្រង',
-    route: 'index',
+    route: 'dashboard',
     icon: 'ic:outline-space-dashboard',
   },
   {

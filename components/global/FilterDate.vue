@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 /* import */
-import moment from 'moment'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+import { DatePicker } from 'v-calendar'
+import 'v-calendar/dist/style.css'
+import moment from 'moment'
 
 /* props */
 const props = defineProps<{
@@ -21,10 +23,26 @@ const dateRanges = [
   { value: 'all-time', name: 'គ្រប់ពេល' },
 ]
 const active = ref<string>('')
+const date = ref()
+
+/* watch */
+watch(date, (newValue) => {
+  active.value = ''
+  modelValue.value = [
+    moment(newValue.start).format('YYYY/MM/DD'),
+    moment(newValue.end).format('YYYY/MM/DD'),
+  ]
+})
+
+/* mounted */
+onMounted(() => {
+  const startDate = new Date()
+  const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
+  date.value = [startDate, endDate]
+})
 
 /* methods */
 const changeDateRange = (keyword: string, close: any) => {
-  console.log('keyword :', keyword)
   modelValue.value = $getDateRangeByKeyword(keyword)
   active.value = keyword
   close()
@@ -64,10 +82,10 @@ const changeDateRange = (keyword: string, close: any) => {
     >
       <PopoverPanel
         v-slot="{ close }"
-        class="absolute right-0 z-50 mt-1.5 w-full bg-white border shadow-lg rounded-xl"
+        class="absolute lg:left-0 z-50 mt-1.5 w-md bg-white border shadow-lg rounded-xl"
       >
-        <div class="grid grid-cols-1">
-          <ul class="p-3">
+        <div class="grid grid-cols-12">
+          <ul class="p-3 col-span-3">
             <li
               v-for="(item, idx) in dateRanges"
               :key="idx"
@@ -80,10 +98,28 @@ const changeDateRange = (keyword: string, close: any) => {
               {{ item.name }}
             </li>
           </ul>
+          <div class="col-span-9 py-4 pr-5">
+            <DatePicker
+              v-model="date"
+              is-expanded
+              title-position="left"
+              is-range
+            />
+          </div>
         </div>
       </PopoverPanel>
     </transition>
   </Popover>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.dp__theme_light {
+  --dp-menu-border-color: transparent;
+}
+.dp__button {
+  display: none !important;
+}
+.vc-container {
+  border: none;
+}
+</style>

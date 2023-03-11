@@ -69,12 +69,15 @@ html.dark {
 // Custom Vuesax pagination
 .vs-pagination--nav {
   .vs-pagination--buttons {
-    @apply <sm:w-[30px] <sm:h-[30px];
+    @apply <sm:w-[30px] <sm:h-[30px] z-10;
   }
 
   .vs-pagination--ul {
     .item-pagination {
       @apply <sm:w-[30px] <sm:h-[30px];
+    }
+    .vs-pagination--li {
+      @apply z-10;
     }
   }
 }
@@ -112,4 +115,9 @@ html.dark {
   td {
     border: none !important;
   }
+}
+
+// Custom Date Picker
+.dp__button {
+  display: none !important;
 }
