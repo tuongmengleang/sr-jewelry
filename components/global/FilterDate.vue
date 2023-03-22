@@ -23,10 +23,10 @@ const dateRanges = [
   { value: 'all-time', name: 'គ្រប់ពេល' },
 ]
 const active = ref<string>('')
-const date = ref()
+const date: any = ref(['', ''])
 
 /* watch */
-watch(date, (newValue) => {
+watch(date, (newValue: { start: any; end: any }) => {
   active.value = ''
   modelValue.value = [
     moment(newValue.start).format('YYYY/MM/DD'),
@@ -35,11 +35,11 @@ watch(date, (newValue) => {
 })
 
 /* mounted */
-onMounted(() => {
-  const startDate = new Date()
-  const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
-  date.value = [startDate, endDate]
-})
+// onMounted(() => {
+//   const startDate = new Date()
+//   const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
+//   date.value = [startDate, endDate]
+// })
 
 /* methods */
 const changeDateRange = (keyword: string, close: any) => {

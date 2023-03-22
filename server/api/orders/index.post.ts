@@ -5,6 +5,8 @@ export default defineEventHandler(async (event): Promise<any> => {
   const client: any = serverSupabaseClient(event)
   const { orderId, customerId, products }: any = await readBody(event)
 
+  console.log({ products })
+
   // Insert Order
   const { data, error } = await client
     .from('orders')

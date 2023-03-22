@@ -20,7 +20,7 @@ const { $storageFile } = useNuxtApp()
         >
           <SplideSlide v-for="(img, i) in images" :key="i">
             <img
-              class="w-full h-full object-cover"
+              class="w-full max-h-64 object-cover object-center"
               :src="$storageFile('products/' + img['image_path'])"
               :alt="title"
             />

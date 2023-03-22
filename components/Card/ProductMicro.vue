@@ -1,14 +1,41 @@
 <script lang="ts" setup>
+import { useCurrencyInput } from 'vue-currency-input'
+import { watchDebounced } from '@vueuse/core'
+
 const props = defineProps<{
   image: string
   title: string
   price?: string
 }>()
 
-const emit = defineEmits(['onDelete'])
+const emit = defineEmits(['onDelete', 'onUpdatePrice'])
+
+// States
+const isEdit = ref<boolean>(false)
+const options = ref<{ currency: string }>({ currency: 'USD' })
+const { inputRef, numberValue, setValue }: any = useCurrencyInput(
+  options.value,
+  false
+)
+watchDebounced(
+  numberValue,
+  (value) => (value ? emit('onUpdatePrice', value) : props.price),
+  {
+    debounce: 0,
+  }
+)
 
 const onClick = () => {
   emit('onDelete')
+}
+
+const startEdit = (): void => {
+  isEdit.value = true
+  setValue(props.price)
+  setTimeout(() => {
+    inputRef.value?.focus()
+    inputRef.value.value = props.price
+  }, 10)
 }
 </script>
 
@@ -29,7 +56,19 @@ const onClick = () => {
           {{ title }}
         </div>
         <div class="w-full flex items-center">
-          <span class="float-right text-sm text-red-500 font-medium">
+          <input
+            v-if="isEdit"
+            ref="inputRef"
+            class="input-ref"
+            type="text"
+            @blur="isEdit = false"
+            @keydown.enter="isEdit = false"
+          />
+          <span
+            v-else
+            class="float-right text-sm text-red-500 font-medium"
+            @click="startEdit"
+          >
             {{ price }}
           </span>
         </div>
@@ -48,4 +87,8 @@ const onClick = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.input-ref {
+  @apply border-b border-red-400 text-red-600 text-sm;
+}
+</style>

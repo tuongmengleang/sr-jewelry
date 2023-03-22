@@ -152,6 +152,10 @@ const onFilterProduct = (c, g): void => {
   gemstone.value = g
 }
 
+const updateProductPrice = (value: string | number, index: number) => {
+  activeProducts.value[index].price = value
+}
+
 const onPurchase = async (): Promise<any> => {
   ui.updateIsLoading(true)
   await useAsyncData('order', () =>
@@ -327,6 +331,7 @@ const onPurchase = async (): Promise<any> => {
                 "
                 :title="product.name"
                 :price="$humanPrice(product.price)"
+                @onUpdatePrice="updateProductPrice($event, index)"
                 @onDelete="onDeleteOrder(index, product.id)"
               >
                 <vs-input-number v-model="product.countOrder" min="1" />

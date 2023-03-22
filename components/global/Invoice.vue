@@ -154,7 +154,7 @@ const totalPrice: any = computed(() =>
         </p>
       </div>
     </div>
-    <div class="absolute bottom-3 left-0 w-full text-center">
+    <div class="w-full text-center">
       <p>សូមអរគុណចំពោះការគាំទ្រលោកអ្នកមកកាន់ហាងយើងខ្ញុំ</p>
     </div>
   </div>
